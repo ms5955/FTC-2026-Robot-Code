@@ -30,7 +30,7 @@ public class ServoTest extends LinearOpMode {
             }
 
             if (gamepad1.b) {
-                hservo.setPosition(0.3);
+                hservo.setPosition(0.55);
             }
 
             if (gamepad1.y) {

@@ -98,11 +98,11 @@ public class TurretLimelightLockTest extends LinearOpMode {
             // HOODER SERVO CONTROL
             // =========================
             if (gamepad1.a) {
-                servos.setHudder(1.0);
+                servos.setHudder(0.55);
             }
 
             if (gamepad1.b) {
-                servos.setHudder(0.95);
+                servos.setHudder(0.39);
             }
 
             // =========================
@@ -131,7 +131,22 @@ public class TurretLimelightLockTest extends LinearOpMode {
 
             if (result != null && result.isValid()) {
 
+                    telemetry.addData("BotPose", result.getBotpose());
+
+                    telemetry.addData("X", result.getBotpose().getPosition().x);
+                    telemetry.addData("Y", result.getBotpose().getPosition().y);
+
+                    telemetry.update();
+
+
                 double tx = result.getTx();
+
+                double x = result.getBotpose().getPosition().x;
+                double y = result.getBotpose().getPosition().y;
+
+                double distance = Math.hypot(x, y);
+
+                telemetry.addData("Distance ()", distance);
 
                 // Smooth TX
                 filteredTx = filteredTx * 0.95 + tx * 0.05;
@@ -186,6 +201,9 @@ public class TurretLimelightLockTest extends LinearOpMode {
 
             telemetry.addData("Right Velocity",
                     "%.1f", shooter.getRightVelocity());
+            telemetry.addData("Servo position", "%.2f", servos.getHudderPosition());
+
+
 
 
 
