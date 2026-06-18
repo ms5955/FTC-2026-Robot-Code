@@ -51,7 +51,7 @@ public class PinpointConstants {
 
     /** The Encoder Direction for the Forward Encoder (Deadwheel)
      * Default Value: GoBildaPinpointDriver.EncoderDirection.REVERSED */
-    public  GoBildaPinpointDriver.EncoderDirection forwardEncoderDirection = GoBildaPinpointDriver.EncoderDirection.REVERSED;
+    public  GoBildaPinpointDriver.EncoderDirection forwardEncoderDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
 
     /** The Encoder Direction for the Strafe Encoder (Deadwheel)
      * Default Value: GoBildaPinpointDriver.EncoderDirection.FORWARD */

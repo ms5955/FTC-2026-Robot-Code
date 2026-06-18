@@ -9,8 +9,8 @@ public class ShooterSubsystem {
     private final DcMotorEx shooterL;
     private final DcMotorEx shooterR;
 
-    private static final double FAST_VELOCITY = 1500;
-    private static final double SLOW_VELOCITY = 1300;
+    private static final double FAST_VELOCITY = 1540;
+    private static final double SLOW_VELOCITY = 1340;
 
     public ShooterSubsystem(HardwareMap hardwareMap) {
 
@@ -30,8 +30,8 @@ public class ShooterSubsystem {
         shooterR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // FTC SDK built-in velocity controller
-        shooterL.setVelocityPIDFCoefficients(40, 0, 2, 19.5);
-        shooterR.setVelocityPIDFCoefficients(40, 0, 2, 19.5);
+        shooterL.setVelocityPIDFCoefficients(50, 0, 3, 19.7);
+        shooterR.setVelocityPIDFCoefficients(50, 0, 3, 19.7);
     }
 
     public void shootFast() {

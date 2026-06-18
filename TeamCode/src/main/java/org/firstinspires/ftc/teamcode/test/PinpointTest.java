@@ -23,6 +23,11 @@ public class PinpointTest extends LinearOpMode {
                 GoBildaPinpointDriver.class,
                 "pinpoint");
 
+        pinpoint.setEncoderDirections(
+                GoBildaPinpointDriver.EncoderDirection.REVERSED,
+                GoBildaPinpointDriver.EncoderDirection.FORWARD
+        );
+
         pinpoint.resetPosAndIMU();
 
         telemetry.addLine("Pinpoint Ready");
