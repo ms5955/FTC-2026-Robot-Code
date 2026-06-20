@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.test;
 import com.qualcomm.hardware.limelightvision.*;
 import com.qualcomm.robotcore.eventloop.opmode.*;
 import com.qualcomm.robotcore.hardware.*;
-
+@Disabled
 @TeleOp
 public class BlueTeleOp1 extends LinearOpMode {
 

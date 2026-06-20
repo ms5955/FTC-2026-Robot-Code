@@ -16,9 +16,9 @@ public class TurretSubsystem {
     private static final double MAX_ANGLE = 120.0;
 
     // PIDF
-    private double kP = 0.013;
+    private double kP = 0.020;
     private double kI = 0.0000;
-    private double kD = 0.00001;
+    private double kD = 0.00003;
     private double kF = 0.020;
 
     private double integral = 0;
@@ -73,7 +73,7 @@ public class TurretSubsystem {
                 targetTicks - currentTicks;
 
         // Deadband to prevent oscillation
-        if (Math.abs(error) < 8) {
+        if (Math.abs(error) < 3) {
             turret.setPower(0);
             integral = 0;
             lastError = error;
@@ -103,16 +103,16 @@ public class TurretSubsystem {
                 (kP * error)
                         + (kI * integral)
                         + (kD * derivative)
-                        - (0.00025 * turretVelocity);
+                        - (0.00010 * turretVelocity);
 
         if (Math.abs(error) > 200) {
-            power += Math.signum(error) * 0.10;
+            power += Math.signum(error) * 0.20;
         }
         else if (Math.abs(error) > 80) {
-            power += Math.signum(error) * 0.06;
+            power += Math.signum(error) * 0.12;
         }
         else if (Math.abs(error) > 20) {
-            power += Math.signum(error) * 0.03;
+            power += Math.signum(error) * 0.06;
         }
 
         power = Math.max(
@@ -121,17 +121,14 @@ public class TurretSubsystem {
 
         double maxPower;
 
-        if (Math.abs(error) > 300) {
-            maxPower = 1.00;
+        if (Math.abs(error) > 150) {
+            maxPower = 1.0;
         }
-        else if (Math.abs(error) > 120) {
-            maxPower = 0.70;
-        }
-        else if (Math.abs(error) > 40) {
-            maxPower = 0.45;
+        else if (Math.abs(error) > 50) {
+            maxPower = 0.9;
         }
         else {
-            maxPower = 0.18;
+            maxPower = 0.6;
         }
 
         power = Math.max(-maxPower, Math.min(maxPower, power));

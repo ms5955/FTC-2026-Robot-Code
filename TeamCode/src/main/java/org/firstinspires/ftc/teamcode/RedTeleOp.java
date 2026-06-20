@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -17,9 +16,10 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ServoSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem1;
 
-@TeleOp(name = "Turret Limelight Lock Test")
-public class TurretLimelightLockTest extends LinearOpMode {
+@TeleOp(name = "Red Teleop")
+public class RedTeleOp extends LinearOpMode {
 
     private DriveSubsystem drive;
     private ShooterSubsystem shooter;
@@ -37,13 +37,24 @@ public class TurretLimelightLockTest extends LinearOpMode {
 
     // Servo Positions
     private static final double STOPPER_OPEN = 0.6;
-    private static final double DRIVE_SPEED = 0.9;
+    private static final double DRIVE_SPEED = 0.95;
     private static final double STOPPER_CLOSED = 0.3;
     private double filteredTx = 0;
-    private static final double KP = 0.015;
-    private static final double MIN_POWER = 0.07;
-    private static final double MAX_POWER = 0.3;
-    private static final double DEADZONE = 1.9;
+    private double lastAimError = 0;
+    private static final double CLOSE_KP = 0.010;
+    private static final double FAR_KP = 0.025;
+    private static final double KD = 0.010;
+    private static final double CLOSE_MIN_POWER = 0.035;
+    private static final double FAR_MIN_POWER = 0.08;
+    private static final double CLOSE_MAX_POWER = 0.22;
+    private static final double MAX_POWER = 0.45;
+    private static final double DEADZONE = 1.5;
+    private static final double SLOW_ZONE_DEGREES = 7.0;
+    private static final double TX_FILTER_OLD_WEIGHT = 0.60;
+    private static final double TX_FILTER_NEW_WEIGHT = 0.40;
+    private static final double TICKS_PER_DEGREE = 7.47;
+    private static final double TURRET_LEFT_LIMIT_DEG = -100.0;
+    private static final double TURRET_RIGHT_LIMIT_DEG = 100.0;
     @Override
     public void runOpMode() {
 
@@ -68,11 +79,13 @@ public class TurretLimelightLockTest extends LinearOpMode {
         turret = hardwareMap.get(DcMotorEx.class, "turret");
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
+        turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turret.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         limelight.pipelineSwitch(1);
         limelight.start();
+        servos.setStopper(STOPPER_CLOSED);
 
         telemetry.addLine("Ready");
         telemetry.update();
@@ -122,12 +135,12 @@ public class TurretLimelightLockTest extends LinearOpMode {
             // =========================
             // HOODER SERVO CONTROL
             // =========================
-            if (gamepad1.a) {
-                servos.setHudder(0.70);
+            if (gamepad2.right_bumper) {
+                servos.setHudder(0.40);
             }
 
-            if (gamepad1.b) {
-                servos.setHudder(0.22);
+            if (gamepad2.right_trigger>0.1) {
+                servos.setHudder(0.25);
             }
 
             // =========================
@@ -164,27 +177,13 @@ public class TurretLimelightLockTest extends LinearOpMode {
 
                 double distance = Math.hypot(x, y);
 
-                // Smooth TX
-                filteredTx = filteredTx * 0.70 + tx * 0.30;
+                filteredTx =
+                        filteredTx * TX_FILTER_OLD_WEIGHT
+                                + tx * TX_FILTER_NEW_WEIGHT;
 
-                double turretPower = 0;
+                double turretPower = calculateTurretPower();
 
-                // Larger lock zone to prevent hunting
-                if (Math.abs(filteredTx) > DEADZONE) {
-
-                    turretPower = -filteredTx * KP;
-
-                    if (Math.abs(turretPower) < MIN_POWER) {
-                        turretPower = Math.signum(turretPower) * MIN_POWER;
-                    }
-
-                    turretPower = Math.max(
-                            -MAX_POWER,
-                            Math.min(MAX_POWER, turretPower)
-                    );
-                }
-
-                turret.setPower(turretPower);
+                turret.setPower(applyTurretWrapLimit(turretPower));
 
                 telemetry.addData("Tag Visible", true);
                 telemetry.addData("TX Raw", tx);
@@ -194,17 +193,18 @@ public class TurretLimelightLockTest extends LinearOpMode {
             } else {
 
                 turret.setPower(0);
+                lastAimError = 0;
 
                 telemetry.addData("Tag Visible", false);
             }
 
             // Manual override
-            if (gamepad1.dpad_left) {
-                turret.setPower(0.3);
+            if (gamepad2.dpad_left) {
+                turret.setPower(applyTurretWrapLimit(0.3));
             }
 
-            if (gamepad1.dpad_right) {
-                turret.setPower(-0.3);
+            if (gamepad2.dpad_right) {
+                turret.setPower(applyTurretWrapLimit(-0.3));
             }
 
             telemetry.addData("Turret Position",
@@ -223,17 +223,50 @@ public class TurretLimelightLockTest extends LinearOpMode {
             telemetry.addData("X (in)", "%.1f", robotX);
             telemetry.addData("Y (in)", "%.1f", robotY);
             telemetry.addData("Heading", "%.1f", heading);
-
-
-
-
-
-
-
             telemetry.update();
         }
 
         turret.setPower(0);
         drive.stop();
+    }
+
+    private double calculateTurretPower() {
+        double absTx = Math.abs(filteredTx);
+
+        if (absTx <= DEADZONE) {
+            lastAimError = 0;
+            return 0;
+        }
+
+        double error = -filteredTx;
+        double derivative = error - lastAimError;
+        lastAimError = error;
+
+        boolean closeToCenter = absTx < SLOW_ZONE_DEGREES;
+        double kP = closeToCenter ? CLOSE_KP : FAR_KP;
+        double minPower = closeToCenter ? CLOSE_MIN_POWER : FAR_MIN_POWER;
+        double maxPower = closeToCenter ? CLOSE_MAX_POWER : MAX_POWER;
+
+        double power = error * kP + derivative * KD;
+
+        if (Math.abs(power) < minPower) {
+            power = Math.signum(power) * minPower;
+        }
+
+        return Math.max(-maxPower, Math.min(maxPower, power));
+    }
+
+    private double applyTurretWrapLimit(double requestedPower) {
+        double turretDeg = turret.getCurrentPosition() / TICKS_PER_DEGREE;
+
+        if (turretDeg >= TURRET_RIGHT_LIMIT_DEG && requestedPower > 0) {
+            return -MAX_POWER;
+        }
+
+        if (turretDeg <= TURRET_LEFT_LIMIT_DEG && requestedPower < 0) {
+            return MAX_POWER;
+        }
+
+        return requestedPower;
     }
 }
