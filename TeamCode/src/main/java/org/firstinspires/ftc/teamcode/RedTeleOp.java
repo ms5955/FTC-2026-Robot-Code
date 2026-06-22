@@ -136,11 +136,11 @@ public class RedTeleOp extends LinearOpMode {
             // HOODER SERVO CONTROL
             // =========================
             if (gamepad2.right_bumper) {
-                servos.setHudder(0.6); // OG 0.40
+                servos.setHudder(0.2); // OG 0.40
             }
 
             if (gamepad2.right_trigger>0.1) {
-                servos.setHudder(0.5);
+                servos.setHudder(0.3);
             }
 
             if (gamepad2.left_bumper) {
@@ -148,7 +148,7 @@ public class RedTeleOp extends LinearOpMode {
             }
 
             if (gamepad2.left_trigger>0.1) {
-                servos.setHudder(0.009);
+                servos.setHudder(0.06);
             }
 
             // =========================

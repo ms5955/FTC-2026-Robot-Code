@@ -10,8 +10,8 @@ public class ShooterSubsystem {
     private final DcMotorEx shooterR;
 
     // === TUNED FOR 10FT TARGET (UPDATED) ===
-    private static final double FAST_VELOCITY = 1520; // Target updated to 1600
-    private static final double SLOW_VELOCITY = 1380;
+    private static final double FAST_VELOCITY = 1400; // Target updated to 1600
+    private static final double SLOW_VELOCITY = 1320;
     private static final double SPINUP_BOOST_POWER = 1.0;
     private static final double SPINUP_BOOST_ERROR = 250; // Boost window increased for fast start
     private static final double READY_TOLERANCE = 40;   // Strict tolerance for perfect consistency
