@@ -23,6 +23,12 @@ public class IntakeSubsystem {
         intake.setPower(-0.8);
     }
 
+    public void intakeSlow(){
+        intake.setPower(-0.7);
+    }
+
+
+
     public void stop() {
         intake.setPower(0);
     }

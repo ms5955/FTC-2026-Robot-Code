@@ -42,7 +42,7 @@ public class BlueTeleOp extends LinearOpMode {
     private double filteredTx = 0;
     private double lastAimError = 0;
     private static final double CLOSE_KP = 0.010;
-    private static final double FAR_KP = 0.025;
+    private static final double FAR_KP = 0.030;
     private static final double KD = 0.010;
     private static final double CLOSE_MIN_POWER = 0.035;
     private static final double FAR_MIN_POWER = 0.08;
@@ -113,6 +113,7 @@ public class BlueTeleOp extends LinearOpMode {
             // =========================
             if (gamepad1.left_bumper) {
                 intake.intakeOut();
+
             }
             else if (gamepad1.left_trigger > 0.1) {
                 intake.intakeIn();
@@ -136,11 +137,11 @@ public class BlueTeleOp extends LinearOpMode {
             // HOODER SERVO CONTROL
             // =========================
             if (gamepad2.right_bumper) {
-                servos.setHudder(0.50);
+                servos.setHudder(0.22);
             }
 
             if (gamepad2.right_trigger>0.1) {
-                servos.setHudder(0.25);
+                servos.setHudder(0.12);
             }
             /*
             // =========================
@@ -173,6 +174,8 @@ public class BlueTeleOp extends LinearOpMode {
                 // Motors ko 1600 RPM par spin karna shuru karein
                 shooter.shootFast();
 
+
+                /*
                 // AUTOMATION HACK: Agar shooter ready hai aur aap D-PAD UP dabate hain,
                 // toh teeno balls automatic perfect interval (delay) ke sath fire hongi.
                 if (gamepad1.dpad_up && shooter.readyForFastShot()) {
@@ -199,6 +202,8 @@ public class BlueTeleOp extends LinearOpMode {
                     sleep(140);
                     servos.setStopper(STOPPER_CLOSED);
                 }
+
+                 */
             }
             else if (gamepad1.right_trigger > 0.1) {
                 shooter.reverse();

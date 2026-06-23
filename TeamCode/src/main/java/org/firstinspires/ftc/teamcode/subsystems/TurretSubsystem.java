@@ -18,7 +18,7 @@ public class TurretSubsystem {
     // PIDF
     private double kP = 0.020;
     private double kI = 0.0000;
-    private double kD = 0.00003;
+    private double kD = 0.00007;
     private double kF = 0.020;
 
     private double integral = 0;
