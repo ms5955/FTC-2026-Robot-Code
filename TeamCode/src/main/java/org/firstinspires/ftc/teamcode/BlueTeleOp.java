@@ -131,6 +131,7 @@ public class BlueTeleOp extends LinearOpMode {
             if(intake.getVelocity()<200){
                 rgb.setPosition(0.2);
             }
+            if(shooter.)
 
 
             // =========================
