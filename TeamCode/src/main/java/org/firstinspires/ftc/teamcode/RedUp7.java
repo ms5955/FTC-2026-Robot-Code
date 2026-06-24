@@ -42,6 +42,15 @@ public class RedUp7 extends OpMode {
     private static final double OPEN_WAIT_TIME = 1000;
     private static final double INTAKE_WAIT_TIME = 800;
 
+    //Turret Angles
+    private static final double SHOOT1_TURRET = 40;
+    private static final double SHOOT2_TURRET = 35;
+    private static final double SHOOT3_TURRET = 30;
+    private static final double SHOOT4_TURRET = 28;
+    private static final double SHOOT5_TURRET = 28;
+    private static final double SHOOT6_TURRET = 28;
+    private static final double SHOOT7_TURRET = 28;
+
     @Override
     public void init() {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
@@ -89,7 +98,7 @@ public class RedUp7 extends OpMode {
         panelsTelemetry.update(telemetry);
     }
 
-    private void startShootPath(PathChain path, int nextState) {
+    private void startShootPath(PathChain path, int nextState, double turretAngle) {
         shooter.shootSlow();
         intake.stop();
         servos.setStopper(STOPPER_CLOSED);
@@ -167,7 +176,7 @@ public class RedUp7 extends OpMode {
         switch (pathState) {
 
             case 0:
-                startShootPath(paths.shoot1, 1);
+                startShootPath(paths.shoot1, 1, SHOOT1_TURRET);
                 break;
 
             case 1:
@@ -434,14 +443,14 @@ public class RedUp7 extends OpMode {
             shoot1 = follower.pathBuilder()
                     .addPath(new BezierLine(
                             new Pose(110.000, 131.000),
-                            new Pose(83.000, 82.000)
+                            new Pose(84.000, 82.000)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
                     .build();
 
             intake1 = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(83.000, 82.000),
+                            new Pose(84.000, 82.000),
                             new Pose(126.000-value, 82.000)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(5), Math.toRadians(0))

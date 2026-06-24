@@ -48,7 +48,7 @@ public class BlueTeleOp extends LinearOpMode {
     private int intakeState = 0;
     private double filteredTx = 0;
     private double lastAimError = 0;
-    private static final double CLOSE_KP = 0.010;
+    private static final double CLOSE_KP = 0.015;
     private static final double FAR_KP = 0.030;
     private static final double KD = 0.010;
     private static final double CLOSE_MIN_POWER = 0.035;
@@ -71,11 +71,9 @@ public class BlueTeleOp extends LinearOpMode {
         servos = new ServoSubsystem(hardwareMap);
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
-// Select the pod type
         pinpoint.setEncoderResolution(
                 GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
 
-// Set encoder directions (change if necessary)
         pinpoint.setEncoderDirections(
                 GoBildaPinpointDriver.EncoderDirection.FORWARD,
                 GoBildaPinpointDriver.EncoderDirection.FORWARD);
@@ -116,10 +114,11 @@ public class BlueTeleOp extends LinearOpMode {
             );
 
             // =========================
-            // INTAKE CONTROL
+            // INTAKE CONTROL..
             // =========================
             if (gamepad1.left_bumper) {
                 intake.intakeOut();
+
 
             }
             else if (gamepad1.left_trigger > 0.1) {
@@ -128,6 +127,11 @@ public class BlueTeleOp extends LinearOpMode {
             else {
                 intake.stop();
             }
+
+            if(intake.getVelocity()<200){
+                rgb.setPosition(0.2);
+            }
+
 
             // =========================
             // STOPPER SERVO CONTROL
