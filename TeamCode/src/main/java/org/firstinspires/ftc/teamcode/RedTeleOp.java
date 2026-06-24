@@ -2,12 +2,15 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
@@ -16,9 +19,8 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ServoSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem1;
 
-@TeleOp(name = "Red Teleop")
+@TeleOp(name = "Blue Teleop")
 public class RedTeleOp extends LinearOpMode {
 
     private DriveSubsystem drive;
@@ -30,6 +32,8 @@ public class RedTeleOp extends LinearOpMode {
 
     private GoBildaPinpointDriver pinpoint;
 
+    private Servo rgb;
+
     private Servo hooder;
 
 
@@ -39,10 +43,13 @@ public class RedTeleOp extends LinearOpMode {
     private static final double STOPPER_OPEN = 0.6;
     private static final double DRIVE_SPEED = 0.95;
     private static final double STOPPER_CLOSED = 0.3;
+    private final ElapsedTime intakeTimer = new ElapsedTime();
+
+    private int intakeState = 0;
     private double filteredTx = 0;
     private double lastAimError = 0;
     private static final double CLOSE_KP = 0.010;
-    private static final double FAR_KP = 0.025;
+    private static final double FAR_KP = 0.030;
     private static final double KD = 0.010;
     private static final double CLOSE_MIN_POWER = 0.035;
     private static final double FAR_MIN_POWER = 0.08;
@@ -113,6 +120,7 @@ public class RedTeleOp extends LinearOpMode {
             // =========================
             if (gamepad1.left_bumper) {
                 intake.intakeOut();
+
             }
             else if (gamepad1.left_trigger > 0.1) {
                 intake.intakeIn();
@@ -136,16 +144,25 @@ public class RedTeleOp extends LinearOpMode {
             // HOODER SERVO CONTROL
             // =========================
             if (gamepad2.right_bumper) {
-                servos.setHudder(0.40);
-            }
-
-            if (gamepad2.right_trigger>0.1) {
                 servos.setHudder(0.22);
             }
 
+            if (gamepad2.right_trigger>0.1) {
+                servos.setHudder(0.12);
+            }
+
+            if (gamepad2.a && intakeState == 0) {
+                intake.intakeOut();
+                intakeTimer.reset();
+                intakeState = 1;
+            }
+
+            /*
             // =========================
             // SHOOTER CONTROL
             // =========================
+
+
             if (gamepad1.right_bumper) {
 
                 shooter.shootFast();
@@ -161,6 +178,56 @@ public class RedTeleOp extends LinearOpMode {
             }
             else {
 
+                shooter.stop();
+            }
+
+             */
+
+
+            // =========================
+            // SHOOTER CONTROL & AUTOMATION (UPDATED)
+            // =========================
+            if (gamepad1.right_bumper) {
+
+                // Motors ko 1600 RPM par spin karna shuru karein
+                shooter.shootFast();
+
+
+                /*
+
+                if (gamepad1.dpad_up && shooter.readyForFastShot()) {
+
+                    // Ball 1 Launch
+                    servos.setrgb(STOPPER_OPEN);
+                    sleep(140);
+                    servos.setStopper(STOPPER_CLOSED);
+
+                    // --- Recovery Gap ---
+                    sleep(250);
+
+                    // Ball 2 Launch
+                    servos.setStopper(STOPPER_OPEN);
+                    sleep(140);
+                    servos.setStopper(STOPPER_CLOSED);
+
+                    // --- Recovery Gap ---
+                    sleep(250);
+
+                    // Ball 3 Launch
+                    servos.setStopper(STOPPER_OPEN);
+                    sleep(140);
+                    servos.setStopper(STOPPER_CLOSED);
+                }
+
+                 */
+            }
+            else if (gamepad1.right_trigger > 0.1) {
+                shooter.reverse();
+            }
+            else if (gamepad1.y){
+                shooter.shootSlow();
+            }
+            else {
                 shooter.stop();
             }
 

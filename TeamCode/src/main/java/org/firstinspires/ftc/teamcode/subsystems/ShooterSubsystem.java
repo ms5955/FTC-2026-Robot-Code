@@ -10,8 +10,8 @@ public class ShooterSubsystem {
     private final DcMotorEx shooterR;
 
     // === TUNED FOR 10FT TARGET (UPDATED) ===
-    private static final double FAST_VELOCITY = 1430; // Target updated to 1600
-    private static final double SLOW_VELOCITY = 1240;
+    private static final double FAST_VELOCITY = 1390; // Target updated to 1600
+    private static final double SLOW_VELOCITY = 1260;
     private static final double SPINUP_BOOST_POWER = 1.0;
     private static final double SPINUP_BOOST_ERROR = 250; // Boost window increased for fast start
     private static final double READY_TOLERANCE = 40;   // Strict tolerance for perfect consistency
@@ -52,17 +52,13 @@ public class ShooterSubsystem {
     public void shootVelocity(double velocity) {
         double currentVel = getAverageVelocity();
 
-        // Agar motor target se kaafi piche hai (0 se uthte waqt)
         if (currentVel < velocity - SPINUP_BOOST_ERROR) {
-            // Hum system ko completely manual raw power par chala rahe hain
             shooterL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             shooterR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-            // Direct Max Voltage (Isse internal smooth filter bypass ho jata hai)
             shooterL.setPower(1.0);
             shooterR.setPower(1.0);
         } else {
-            // Jaise hi 1350+ RPM touch ho, instantly encoders ko wapas lock karein
             if (shooterL.getMode() == DcMotor.RunMode.RUN_WITHOUT_ENCODER) {
                 shooterL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 shooterR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

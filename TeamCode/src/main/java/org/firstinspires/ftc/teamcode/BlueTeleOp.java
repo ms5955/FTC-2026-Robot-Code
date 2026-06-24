@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
@@ -30,6 +32,8 @@ public class BlueTeleOp extends LinearOpMode {
 
     private GoBildaPinpointDriver pinpoint;
 
+    private Servo rgb;
+
     private Servo hooder;
 
 
@@ -39,6 +43,9 @@ public class BlueTeleOp extends LinearOpMode {
     private static final double STOPPER_OPEN = 0.6;
     private static final double DRIVE_SPEED = 0.95;
     private static final double STOPPER_CLOSED = 0.3;
+    private final ElapsedTime intakeTimer = new ElapsedTime();
+
+    private int intakeState = 0;
     private double filteredTx = 0;
     private double lastAimError = 0;
     private static final double CLOSE_KP = 0.010;
@@ -143,10 +150,19 @@ public class BlueTeleOp extends LinearOpMode {
             if (gamepad2.right_trigger>0.1) {
                 servos.setHudder(0.12);
             }
+
+            if (gamepad2.a && intakeState == 0) {
+                intake.intakeOut();
+                intakeTimer.reset();
+                intakeState = 1;
+            }
+
             /*
             // =========================
             // SHOOTER CONTROL
             // =========================
+
+
             if (gamepad1.right_bumper) {
 
                 shooter.shootFast();
@@ -166,6 +182,8 @@ public class BlueTeleOp extends LinearOpMode {
             }
 
              */
+
+
             // =========================
             // SHOOTER CONTROL & AUTOMATION (UPDATED)
             // =========================
@@ -176,12 +194,11 @@ public class BlueTeleOp extends LinearOpMode {
 
 
                 /*
-                // AUTOMATION HACK: Agar shooter ready hai aur aap D-PAD UP dabate hain,
-                // toh teeno balls automatic perfect interval (delay) ke sath fire hongi.
+
                 if (gamepad1.dpad_up && shooter.readyForFastShot()) {
 
                     // Ball 1 Launch
-                    servos.setStopper(STOPPER_OPEN);
+                    servos.setrgb(STOPPER_OPEN);
                     sleep(140); // Stopper khulne ka time
                     servos.setStopper(STOPPER_CLOSED);
 

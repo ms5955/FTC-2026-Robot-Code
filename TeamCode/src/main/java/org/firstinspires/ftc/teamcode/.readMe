@@ -1,5 +1,10 @@
 //For Short Shoot
 1. Shooter speed : 1240
-2. Hudder Servo Position : 22
+2. Hudder Servo Position : 0.12
+3. PIDF : P 120, I 0, D 18, F 25
+
+//For Long Shoot
+1. Shooter Speed : 1410
+2. Hudder Servo Position : 0.12
 3. PIDF : P 120, I 0, D 18, F 25
 
