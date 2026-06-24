@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ServoSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.RGBSubsystem;
 
-@TeleOp(name = "Blue Teleop")
+@TeleOp(name = "Red Teleop")
 public class RedTeleOp extends LinearOpMode {
 
     private DriveSubsystem drive;
