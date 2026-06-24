@@ -96,6 +96,10 @@ public class ShooterSubsystem {
         return getAverageVelocity() >= SLOW_VELOCITY - READY_TOLERANCE;
     }
 
+    public double getCurrentVelocity(){
+        return getCurrentVelocity();
+    }
+
     public double getAverageVelocity() {
         return (Math.abs(shooterL.getVelocity())
                 + Math.abs(shooterR.getVelocity())) / 2.0;

@@ -73,7 +73,7 @@ public class RedUp7 extends OpMode {
 
         panelsTelemetry.debug("Status", "Initialized");
         panelsTelemetry.update(telemetry );
-        follower.setMaxPower(0.95);
+        follower.setMaxPower(0.9);
 
     }
 
@@ -81,6 +81,25 @@ public class RedUp7 extends OpMode {
     public void loop() {
         follower.update();
         turret.update(Math.toDegrees(follower.getPose().getHeading()));
+        double x = follower.getPose().getX();
+        double y = follower.getPose().getY();
+        if (pathState == 1 ||
+                pathState == 8 ||
+                pathState == 15 ||
+                pathState == 22 ||
+                pathState == 29 ||
+                pathState == 36 ||
+                pathState == 43) {
+
+            double distanceToShoot =
+                    Math.hypot(84.0 - x, 82.0 - y);
+
+            if (distanceToShoot < 12) {
+                follower.setMaxPower(0.4);
+            } else {
+                follower.setMaxPower(0.9);
+            }
+        }
         autonomousPathUpdate();
 
         telemetry.addData("Path State", pathState);
@@ -212,7 +231,7 @@ public class RedUp7 extends OpMode {
                 break;
 
             case 7:
-                startShootPath(paths.shoot2, 8);
+                startShootPath(paths.shoot2, 8, SHOOT2_TURRET);
                 break;
 
             case 8:
