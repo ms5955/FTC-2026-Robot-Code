@@ -135,10 +135,13 @@ public class RedTeleOp extends LinearOpMode {
             {
                 rgb.blue();
             }
+            else { rgb.off();}
+
             if(shooter.getAverageVelocity()>1500)
             {
                 rgb.green();
             }
+            else { rgb.off();}
 
 
             // =========================
@@ -266,6 +269,7 @@ public class RedTeleOp extends LinearOpMode {
                 turret.setPower(applyTurretWrapLimit(turretPower));
 
                 telemetry.addData("Tag Visible", true);
+                telemetry.addData("Intake Velocity", intake.getVelocity());
                 telemetry.addData("TX Raw", tx);
                 telemetry.addData("TX Filtered", filteredTx);
                 telemetry.addData("Turret Power", turretPower);
