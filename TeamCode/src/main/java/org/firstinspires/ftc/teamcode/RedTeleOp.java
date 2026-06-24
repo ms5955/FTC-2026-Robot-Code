@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ServoSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.RGBSubsystem;
 
 @TeleOp(name = "Blue Teleop")
 public class RedTeleOp extends LinearOpMode {
@@ -30,9 +31,10 @@ public class RedTeleOp extends LinearOpMode {
     private Limelight3A limelight;
     private ServoSubsystem servos;
 
+    private RGBSubsystem rgb;
+
     private GoBildaPinpointDriver pinpoint;
 
-    private Servo rgb;
 
     private Servo hooder;
 
@@ -41,14 +43,14 @@ public class RedTeleOp extends LinearOpMode {
 
     // Servo Positions
     private static final double STOPPER_OPEN = 0.6;
-    private static final double DRIVE_SPEED = 0.95;
+    private static final double DRIVE_SPEED = 0.8;
     private static final double STOPPER_CLOSED = 0.3;
     private final ElapsedTime intakeTimer = new ElapsedTime();
 
     private int intakeState = 0;
     private double filteredTx = 0;
     private double lastAimError = 0;
-    private static final double CLOSE_KP = 0.010;
+    private static final double CLOSE_KP = 0.015;
     private static final double FAR_KP = 0.030;
     private static final double KD = 0.010;
     private static final double CLOSE_MIN_POWER = 0.035;
@@ -69,13 +71,12 @@ public class RedTeleOp extends LinearOpMode {
         shooter = new ShooterSubsystem(hardwareMap);
         intake = new IntakeSubsystem(hardwareMap);
         servos = new ServoSubsystem(hardwareMap);
+        rgb = new RGBSubsystem(hardwareMap);
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
-// Select the pod type
         pinpoint.setEncoderResolution(
                 GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
 
-// Set encoder directions (change if necessary)
         pinpoint.setEncoderDirections(
                 GoBildaPinpointDriver.EncoderDirection.FORWARD,
                 GoBildaPinpointDriver.EncoderDirection.FORWARD);
@@ -116,10 +117,11 @@ public class RedTeleOp extends LinearOpMode {
             );
 
             // =========================
-            // INTAKE CONTROL
+            // INTAKE CONTROL..
             // =========================
             if (gamepad1.left_bumper) {
                 intake.intakeOut();
+
 
             }
             else if (gamepad1.left_trigger > 0.1) {
@@ -128,6 +130,16 @@ public class RedTeleOp extends LinearOpMode {
             else {
                 intake.stop();
             }
+
+            if(intake.getVelocity()<200)
+            {
+                rgb.blue();
+            }
+            if(shooter.getAverageVelocity()>1500)
+            {
+                rgb.green();
+            }
+
 
             // =========================
             // STOPPER SERVO CONTROL
@@ -199,10 +211,11 @@ public class RedTeleOp extends LinearOpMode {
 
                     // Ball 1 Launch
                     servos.setrgb(STOPPER_OPEN);
-                    sleep(140);
+                    sleep(140); // Stopper khulne ka time
                     servos.setStopper(STOPPER_CLOSED);
 
                     // --- Recovery Gap ---
+                    // Is 250ms ke break me motor wapas crash velocity (1300) se 1600 RPM recover kar lega
                     sleep(250);
 
                     // Ball 2 Launch

@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ServoSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.RGBSubsystem;
 
 @TeleOp(name = "Blue Teleop")
 public class BlueTeleOp extends LinearOpMode {
@@ -30,9 +31,10 @@ public class BlueTeleOp extends LinearOpMode {
     private Limelight3A limelight;
     private ServoSubsystem servos;
 
+    private RGBSubsystem rgb;
+
     private GoBildaPinpointDriver pinpoint;
 
-    private Servo rgb;
 
     private Servo hooder;
 
@@ -41,7 +43,7 @@ public class BlueTeleOp extends LinearOpMode {
 
     // Servo Positions
     private static final double STOPPER_OPEN = 0.6;
-    private static final double DRIVE_SPEED = 0.95;
+    private static final double DRIVE_SPEED = 0.8;
     private static final double STOPPER_CLOSED = 0.3;
     private final ElapsedTime intakeTimer = new ElapsedTime();
 
@@ -69,6 +71,7 @@ public class BlueTeleOp extends LinearOpMode {
         shooter = new ShooterSubsystem(hardwareMap);
         intake = new IntakeSubsystem(hardwareMap);
         servos = new ServoSubsystem(hardwareMap);
+        rgb = new RGBSubsystem(hardwareMap);
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         pinpoint.setEncoderResolution(
@@ -128,11 +131,13 @@ public class BlueTeleOp extends LinearOpMode {
                 intake.stop();
             }
 
-            if(intake.getVelocity()<200){
-                rgb.setPosition(0.2);
+            if(intake.getVelocity()<200)
+            {
+                rgb.blue();
             }
-            if(shooter.readyForFastShot()){
-                rgb.setPosition(0.0);
+            if(shooter.getAverageVelocity()>1500)
+            {
+                rgb.green();
             }
 
 
