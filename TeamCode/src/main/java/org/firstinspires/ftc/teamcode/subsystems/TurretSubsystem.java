@@ -8,11 +8,18 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class TurretSubsystem {
 
     private final DcMotorEx turret;
-
-    // 537.7 CPR * (100/20)
-
     public static final double MOTOR_TPR = 537.7;
+    /*
+    GEAR_RATIO
+        = 84 / 19
+        = 4.4210526316
+
+    TICKS_PER_TURRET
+        = 537.7 × 4.4210526316
+        ≈ 2377.2 ticks
+    */
     public static final double GEAR_RATIO = 84.0 / 19.0;      // 4.42105263
+
     public static final double TICKS_PER_TURRET_REV = MOTOR_TPR * GEAR_RATIO;
 
     private static final double TICKS_PER_DEGREE = 6.6033;
@@ -21,10 +28,10 @@ public class TurretSubsystem {
     private static final double MAX_ANGLE = 120.0;
 
     // PIDF
-    private double kP = 0.020;
+    private double kP = 0.009;
     private double kI = 0.0000;
-    private double kD = 0.00007;
-    private double kF = 0.020;
+    private double kD = 0.0002;
+    private double kF = 0.05;
 
     private double integral = 0;
     private double lastError = 0;

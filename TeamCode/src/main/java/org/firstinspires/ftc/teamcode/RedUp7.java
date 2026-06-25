@@ -67,7 +67,7 @@ public class RedUp7 extends OpMode {
         intake = new IntakeSubsystem(hardwareMap);
         servos = new ServoSubsystem(hardwareMap);
         turret = new TurretSubsystem(hardwareMap);
-        turret.setFieldAngle(40);
+        turret.setFieldAngle(35);
 
         servos.setStopper(STOPPER_CLOSED);
         servos.setHudder(0.12);
@@ -88,7 +88,7 @@ public class RedUp7 extends OpMode {
         double y = follower.getPose().getY();
 
         // Shoot preload while driving
-        if (!firstShotStarted && y >= 95 && y <= 104) {
+        if (!firstShotStarted && y >= 106 && y <= 118) {
 
             firstShotStarted = true;
             shooter.ShortVelocity();
