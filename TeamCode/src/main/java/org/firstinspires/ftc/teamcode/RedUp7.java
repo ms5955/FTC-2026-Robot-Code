@@ -35,6 +35,10 @@ public class RedUp7 extends OpMode {
     private TurretSubsystem turret;
 
     private ElapsedTime waitTimer = new ElapsedTime();
+
+    private boolean firstShotStarted = false;
+    private ElapsedTime movingShootTimer = new ElapsedTime();
+
     private static int value = 2;
     private static final double STOPPER_OPEN = 0.6;
     private static final double STOPPER_CLOSED = 0.3;
@@ -63,7 +67,6 @@ public class RedUp7 extends OpMode {
         intake = new IntakeSubsystem(hardwareMap);
         servos = new ServoSubsystem(hardwareMap);
         turret = new TurretSubsystem(hardwareMap);
-
         turret.setFieldAngle(40);
 
         servos.setStopper(STOPPER_CLOSED);
@@ -83,6 +86,29 @@ public class RedUp7 extends OpMode {
         turret.update(Math.toDegrees(follower.getPose().getHeading()));
         double x = follower.getPose().getX();
         double y = follower.getPose().getY();
+
+        // Shoot preload while driving
+        if (!firstShotStarted && y >= 95 && y <= 104) {
+
+            firstShotStarted = true;
+            shooter.ShortVelocity();
+            servos.setStopper(STOPPER_OPEN);
+            intake.intakeIn();
+
+           // movingShootTimer.reset();
+        }
+
+        if (firstShotStarted) {
+
+            if (movingShootTimer.milliseconds() >= 2200) {
+
+                servos.setStopper(STOPPER_CLOSED);
+                intake.stop();
+                shooter.stop();
+
+                firstShotStarted = false;
+            }
+        }
         if (pathState == 1 ||
                 pathState == 8 ||
                 pathState == 15 ||
@@ -130,8 +156,8 @@ public class RedUp7 extends OpMode {
         shooter.shootSlow();
         servos.setStopper(STOPPER_OPEN);
 
-        // If this is physically opposite, change intakeOut() to intakeIn()
-        intake.intakeOut();
+        // If this is physically opposite, change intakeIn() to intakeIn()
+        intake.intakeIn();
 
         if (waitTimer.milliseconds() >= SHOOT_TIME) {
             servos.setStopper(STOPPER_CLOSED);
@@ -145,8 +171,8 @@ public class RedUp7 extends OpMode {
         shooter.stop();
         servos.setStopper(STOPPER_CLOSED);
 
-        // If this is physically opposite, change intakeOut() to intakeIn()
-        intake.intakeOut();
+        // If this is physically opposite, change intakeIn() to intakeIn()
+        intake.intakeIn();
 
         follower.followPath(path);
         pathState = nextState;
@@ -173,7 +199,7 @@ public class RedUp7 extends OpMode {
     private void waitWithIntakeOn(int nextState) {
         shooter.stop();
         servos.setStopper(STOPPER_CLOSED);
-        intake.intakeOut();
+        intake.intakeIn();
 
         if (waitTimer.milliseconds() >= INTAKE_WAIT_TIME) {
             intake.stop();
@@ -181,6 +207,7 @@ public class RedUp7 extends OpMode {
         }
     }
 
+    /*
     private void waitWithIntakeOff(int nextState) {
         shooter.stop();
         intake.stop();
@@ -190,6 +217,7 @@ public class RedUp7 extends OpMode {
             pathState = nextState;
         }
     }
+    */
 
     public void autonomousPathUpdate() {
         switch (pathState) {
@@ -200,8 +228,7 @@ public class RedUp7 extends OpMode {
 
             case 1:
                 if (!follower.isBusy()) {
-                    waitTimer.reset();
-                    pathState = 2;
+                    pathState = 3;
                 }
                 break;
 

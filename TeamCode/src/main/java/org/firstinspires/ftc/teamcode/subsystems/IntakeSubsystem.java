@@ -12,15 +12,17 @@ public class IntakeSubsystem {
 
         intake = hardwareMap.get(DcMotorEx.class, "I");
 
+        intake.setDirection(DcMotorEx.Direction.REVERSE);
+
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void intakeIn() {
-        intake.setPower(0.5);
+        intake.setPower(0.8);
     }
 
     public void intakeOut() {
-        intake.setPower(-0.8);
+        intake.setPower(-0.5);
     }
 
     public void intakeSlow(){

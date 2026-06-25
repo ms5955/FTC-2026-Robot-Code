@@ -10,7 +10,12 @@ public class TurretSubsystem {
     private final DcMotorEx turret;
 
     // 537.7 CPR * (100/20)
-    private static final double TICKS_PER_DEGREE = 7.47;
+
+    public static final double MOTOR_TPR = 537.7;
+    public static final double GEAR_RATIO = 84.0 / 19.0;      // 4.42105263
+    public static final double TICKS_PER_TURRET_REV = MOTOR_TPR * GEAR_RATIO;
+
+    private static final double TICKS_PER_DEGREE = 6.6033;
 
     private static final double MIN_ANGLE = -120.0;
     private static final double MAX_ANGLE = 120.0;
