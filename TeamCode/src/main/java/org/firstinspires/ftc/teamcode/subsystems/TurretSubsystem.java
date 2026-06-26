@@ -22,16 +22,19 @@ public class TurretSubsystem {
 
     public static final double TICKS_PER_TURRET_REV = MOTOR_TPR * GEAR_RATIO;
 
-    private static final double TICKS_PER_DEGREE = 6.6033;
+    private static final double TICKS_PER_DEGREE = 13.2047;
 
     private static final double MIN_ANGLE = -120.0;
     private static final double MAX_ANGLE = 120.0;
 
+    private double currentPower = 0;
+    private static final double MAX_POWER_CHANGE = 0.02;
+
     // PIDF
-    private double kP = 0.009;
+    private double kP = 0.0065;
     private double kI = 0.0000;
-    private double kD = 0.0002;
-    private double kF = 0.05;
+    private double kD = 0.00025;
+    private double kF = 0.03;
 
     private double integral = 0;
     private double lastError = 0;
@@ -85,7 +88,7 @@ public class TurretSubsystem {
                 targetTicks - currentTicks;
 
         // Deadband to prevent oscillation
-        if (Math.abs(error) < 3) {
+        if (Math.abs(error) < 7) {
             turret.setPower(0);
             integral = 0;
             lastError = error;
@@ -115,16 +118,16 @@ public class TurretSubsystem {
                 (kP * error)
                         + (kI * integral)
                         + (kD * derivative)
-                        - (0.00010 * turretVelocity);
+                        - (0.00003 * turretVelocity);
 
         if (Math.abs(error) > 200) {
-            power += Math.signum(error) * 0.20;
+            power += Math.signum(error) * 0.10;
         }
         else if (Math.abs(error) > 80) {
-            power += Math.signum(error) * 0.12;
+            power += Math.signum(error) * 0.06;
         }
         else if (Math.abs(error) > 20) {
-            power += Math.signum(error) * 0.06;
+            power += Math.signum(error) * 0.03;
         }
 
         power = Math.max(
@@ -134,17 +137,16 @@ public class TurretSubsystem {
         double maxPower;
 
         if (Math.abs(error) > 150) {
-            maxPower = 1.0;
+            maxPower = 0.45;
         }
         else if (Math.abs(error) > 50) {
-            maxPower = 0.9;
+            maxPower = 0.30;
         }
         else {
-            maxPower = 0.6;
+            maxPower = 0.18;
         }
-
         power = Math.max(-maxPower, Math.min(maxPower, power));
-        turret.setPower(power);
+        turret.setPower(smoothPower(power));
 
         lastError = error;
     }
@@ -161,6 +163,19 @@ public class TurretSubsystem {
      */
     public void aimRight() {
         lockedFieldAngle -= 1;
+    }
+
+    private double smoothPower(double targetPower) {
+
+        double delta = targetPower - currentPower;
+
+        if (Math.abs(delta) > MAX_POWER_CHANGE) {
+            delta = Math.signum(delta) * MAX_POWER_CHANGE;
+        }
+
+        currentPower += delta;
+
+        return currentPower;
     }
 
     /**

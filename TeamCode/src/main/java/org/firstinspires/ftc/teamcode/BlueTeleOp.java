@@ -50,6 +50,8 @@ public class BlueTeleOp extends LinearOpMode {
     private int intakeState = 0;
     private double filteredTx = 0;
     private double lastAimError = 0;
+
+
     private static final double CLOSE_KP = 0.015;
     private static final double FAR_KP = 0.030;
     private static final double KD = 0.010;
@@ -120,35 +122,34 @@ public class BlueTeleOp extends LinearOpMode {
             // INTAKE CONTROL..
             // =========================
             if (gamepad1.left_bumper) {
-                intake.intakeOut();
+                intake.intakeIn();
 
 
             }
             else if (gamepad1.left_trigger > 0.1) {
-                intake.intakeIn();
+                intake.intakeOut();
             }
             else {
                 intake.stop();
             }
 
-            if(intake.getVelocity()<200)
-            {
-                rgb.blue();
+            if (shooter.getAverageVelocity()>1200 && gamepad1.y == true) {
+                servos.setStopper(STOPPER_OPEN);
             }
-            if(shooter.getAverageVelocity()>1500)
-            {
-                rgb.green();
+            if (shooter.getAverageVelocity()<1200) {
+                servos.setStopper(STOPPER_CLOSED);
             }
 
 
             // =========================
             // STOPPER SERVO CONTROL
             // =========================
-            if (gamepad1.dpad_down) {
+
+            if (gamepad2.dpad_down) {
                 servos.setStopper(STOPPER_CLOSED);
             }
 
-            if (gamepad1.dpad_up) {
+            if (shooter.getAverageVelocity()>1200) {
                 servos.setStopper(STOPPER_OPEN);
             }
 
@@ -287,8 +288,10 @@ public class BlueTeleOp extends LinearOpMode {
                 turret.setPower(applyTurretWrapLimit(-0.3));
             }
 
-            telemetry.addData("Turret Position",
-                    turret.getCurrentPosition());
+            double turretAngle = turret.getCurrentPosition() / TICKS_PER_DEGREE;
+
+            telemetry.addData("Turret Angle", "%.2f°", turretAngle);
+            telemetry.addData("Encoder Ticks", turret.getCurrentPosition());
 
             telemetry.addLine("===== SHOOTER =====");
 

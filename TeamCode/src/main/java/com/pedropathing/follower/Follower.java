@@ -145,6 +145,14 @@ public class Follower {
         }
     }
 
+    public void enablePredictiveBraking() {
+        usePredictiveBraking = true;
+    }
+
+    public void disablePredictiveBraking() {
+        usePredictiveBraking = false;
+    }
+
     /**
      * This sets the current pose in the PoseTracker without using offsets.
      *

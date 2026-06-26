@@ -18,7 +18,7 @@ public class IntakeSubsystem {
     }
 
     public void intakeIn() {
-        intake.setPower(0.8);
+        intake.setPower(0.85);
     }
 
     public void intakeOut() {

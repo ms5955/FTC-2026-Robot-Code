@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode.test;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
-
+@Disabled
 @Autonomous(name = "HardwareCheckoutAuto")
 public class HardwareCheckoutAuto extends LinearOpMode {
 

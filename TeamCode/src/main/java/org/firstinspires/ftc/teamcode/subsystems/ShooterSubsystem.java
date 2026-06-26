@@ -8,11 +8,9 @@ public class ShooterSubsystem {
 
     private final DcMotorEx shooterL;
     private final DcMotorEx shooterR;
-
-    // === TUNED FOR 10FT TARGET (UPDATED) ===
-    private static final double FAST_VELOCITY = 1390; // Target updated to 1600
+    private static final double FAST_VELOCITY = 1390;
     private static final double SLOW_VELOCITY = 1260;
-    private static final double SHORT_VELOCITY = 1000;
+    private static final double SHORT_VELOCITY = 1280;
     private static final double SPINUP_BOOST_POWER = 1.0;
     private static final double SPINUP_BOOST_ERROR = 250; // Boost window increased for fast start
     private static final double READY_TOLERANCE = 40;   // Strict tolerance for perfect consistency
@@ -37,9 +35,9 @@ public class ShooterSubsystem {
 
 
         // === NEW TUNED PIDF COEFFICIENTS (UPDATED) ===
-        // P=120, I=0, D=18, F=24.2 for lock and fast recovery
-        shooterL.setVelocityPIDFCoefficients(120, 0, 18, 25);
-        shooterR.setVelocityPIDFCoefficients(120, 0, 18, 25);
+        // P=125, I=0, D=5, F=15 for lock and fast recovery
+        shooterL.setVelocityPIDFCoefficients(125, 0, 5, 15);
+        shooterR.setVelocityPIDFCoefficients(125, 0, 5, 15);
     }
 
     public void shootFast() {
@@ -69,10 +67,9 @@ public class ShooterSubsystem {
                 shooterR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
                 // Coefficients ko hardware par force-refresh karein
-                shooterL.setVelocityPIDFCoefficients(120, 0, 18, 24.2);
-                shooterR.setVelocityPIDFCoefficients(120, 0, 18, 24.2);
+                shooterL.setVelocityPIDFCoefficients(125, 0, 5, 15);
+                shooterR.setVelocityPIDFCoefficients(125, 0, 5, 15);
             }
-            // Ab PIDF speed ko 1600 par tight lock rakhega
             shooterL.setVelocity(velocity);
             shooterR.setVelocity(velocity);
         }
@@ -99,10 +96,6 @@ public class ShooterSubsystem {
 
     public boolean readyForSlowShot() {
         return getAverageVelocity() >= SLOW_VELOCITY - READY_TOLERANCE;
-    }
-
-    public double getCurrentVelocity(){
-        return getCurrentVelocity();
     }
 
     public double getAverageVelocity() {

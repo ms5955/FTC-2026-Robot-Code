@@ -29,10 +29,10 @@ public class RedUp7 extends OpMode {
     public Follower follower;
     private int pathState = 0;
     private Paths paths;
-    private ShooterSubsystem shooter;
-    private IntakeSubsystem intake;
-    private ServoSubsystem servos;
-    private TurretSubsystem turret;
+    private static ShooterSubsystem shooter;
+    private static IntakeSubsystem intake;
+    private static ServoSubsystem servos;
+    private static TurretSubsystem turret;
 
     private ElapsedTime waitTimer = new ElapsedTime();
 
@@ -42,7 +42,7 @@ public class RedUp7 extends OpMode {
     private static int value = 2;
     private static final double STOPPER_OPEN = 0.6;
     private static final double STOPPER_CLOSED = 0.3;
-    private static final double SHOOT_TIME =850;
+    private static final double SHOOT_TIME = 850;
     private static final double OPEN_WAIT_TIME = 1000;
     private static final double INTAKE_WAIT_TIME = 800;
 
@@ -67,15 +67,15 @@ public class RedUp7 extends OpMode {
         intake = new IntakeSubsystem(hardwareMap);
         servos = new ServoSubsystem(hardwareMap);
         turret = new TurretSubsystem(hardwareMap);
-        turret.setFieldAngle(35);
 
-        servos.setStopper(STOPPER_CLOSED);
+
+        servos.setStopper(STOPPER_OPEN);
         servos.setHudder(0.12);
 
         paths = new Paths(follower);
 
         panelsTelemetry.debug("Status", "Initialized");
-        panelsTelemetry.update(telemetry );
+        panelsTelemetry.update(telemetry);
         follower.setMaxPower(0.9);
 
     }
@@ -86,17 +86,6 @@ public class RedUp7 extends OpMode {
         turret.update(Math.toDegrees(follower.getPose().getHeading()));
         double x = follower.getPose().getX();
         double y = follower.getPose().getY();
-
-        // Shoot preload while driving
-        if (!firstShotStarted && y >= 106 && y <= 118) {
-
-            firstShotStarted = true;
-            shooter.ShortVelocity();
-            servos.setStopper(STOPPER_OPEN);
-            intake.intakeIn();
-
-           // movingShootTimer.reset();
-        }
 
         if (firstShotStarted) {
 
@@ -143,37 +132,37 @@ public class RedUp7 extends OpMode {
         panelsTelemetry.update(telemetry);
     }
 
-    private void startShootPath(PathChain path, int nextState, double turretAngle) {
-        shooter.shootSlow();
-        intake.stop();
-        servos.setStopper(STOPPER_CLOSED);
-
+    private void IntakeShoot(PathChain path) {
         follower.followPath(path);
-        pathState = nextState;
-    }
-
-    private void runShootSequence(int nextState) {
-        shooter.shootSlow();
-        servos.setStopper(STOPPER_OPEN);
-
-        // If this is physically opposite, change intakeIn() to intakeIn()
-        intake.intakeIn();
-
         if (waitTimer.milliseconds() >= SHOOT_TIME) {
             servos.setStopper(STOPPER_CLOSED);
             intake.stop();
             shooter.stop();
+        }
+    }
+    private void startShootPath(PathChain path, int nextState) {
+        follower.followPath(path);
+        pathState = nextState;
+    }
+
+//For Shooting Wait
+    private void waitAndShoot(int nextState) {
+
+        shooter.ShortVelocity();
+        servos.setStopper(STOPPER_OPEN);
+        intake.intakeIn();
+
+        if (waitTimer.milliseconds() >= 1000) {   // Wait 1 second
+
+            servos.setStopper(STOPPER_CLOSED);
+            intake.stop();
+            shooter.stop();
+
             pathState = nextState;
         }
     }
 
     private void startIntakePath(PathChain path, int nextState) {
-        shooter.stop();
-        servos.setStopper(STOPPER_CLOSED);
-
-        // If this is physically opposite, change intakeIn() to intakeIn()
-        intake.intakeIn();
-
         follower.followPath(path);
         pathState = nextState;
     }
@@ -185,26 +174,6 @@ public class RedUp7 extends OpMode {
 
         follower.followPath(path);
         pathState = nextState;
-    }
-
-    private void startPathToIntake(PathChain path, int nextState) {
-        shooter.stop();
-        intake.stop();
-        servos.setStopper(STOPPER_CLOSED);
-
-        follower.followPath(path);
-        pathState = nextState;
-    }
-
-    private void waitWithIntakeOn(int nextState) {
-        shooter.stop();
-        servos.setStopper(STOPPER_CLOSED);
-        intake.intakeIn();
-
-        if (waitTimer.milliseconds() >= INTAKE_WAIT_TIME) {
-            intake.stop();
-            pathState = nextState;
-        }
     }
 
     /*
@@ -223,7 +192,8 @@ public class RedUp7 extends OpMode {
         switch (pathState) {
 
             case 0:
-                startShootPath(paths.shoot1, 1, SHOOT1_TURRET);
+                shooter.ShortVelocity();
+                startShootPath(paths.shoot1, 1);
                 break;
 
             case 1:
@@ -232,46 +202,33 @@ public class RedUp7 extends OpMode {
                 }
                 break;
 
-            case 2:
-                runShootSequence(3);
-                break;
-            /*
             case 3:
                 startIntakePath(paths.intake1, 4);
                 break;
 
             case 4:
                 if (!follower.isBusy()) {
-                    startOpenPath(paths.open1, 5);
+                    startOpenPath(paths.shoot2, 5);
                 }
                 break;
-
             case 5:
-                if (!follower.isBusy()) {
-                    waitTimer.reset();
-                    pathState = 6;
-                }
+                IntakeShoot(paths.shoot2);
+                intake.intakeIn();
+                waitAndShoot(6);
                 break;
 
             case 6:
-                waitWithIntakeOff(7);
-                break;
-
-            case 7:
-                startShootPath(paths.shoot2, 8, SHOOT2_TURRET);
-                break;
-
-            case 8:
                 if (!follower.isBusy()) {
                     waitTimer.reset();
-                    pathState = 9;
+                    pathState = 7;
                 }
                 break;
 
-            case 9:
-                runShootSequence(10);
+            case 7:
+                startIntakePath(paths.intake2, 8);
                 break;
 
+                /*
             case 10:
                 startIntakePath(paths.intake2, 11);
                 break;
@@ -466,10 +423,8 @@ public class RedUp7 extends OpMode {
     public static class Paths {
         public PathChain shoot1;
         public PathChain intake1;
-        public PathChain open1;
         public PathChain shoot2;
         public PathChain intake2;
-        public PathChain open2;
         public PathChain shoot3;
         public PathChain pathTOintake1;
         public PathChain intake3;
@@ -489,44 +444,66 @@ public class RedUp7 extends OpMode {
             shoot1 = follower.pathBuilder()
                     .addPath(new BezierLine(
                             new Pose(110.000, 131.000),
-                            new Pose(84.000, 82.000)
+                            new Pose(94.000, 60.000)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90))
+                    .addParametricCallback(0.01, () -> {
+                        turret.setFieldAngle(65);
+                        servos.setHudder(0.4);
+                    })
+                    .addParametricCallback(0.25, () -> {
+                        intake.intakeIn();
+                    })
+                    .addParametricCallback(0.6, () -> {
+                        shooter.stop();
+                        intake.stop();
+                    })
                     .build();
 
             intake1 = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(84.000, 82.000),
-                            new Pose(126.000-value, 82.000)
-                    ))
-                    .setLinearHeadingInterpolation(Math.toRadians(5), Math.toRadians(0))
-                    .build();
-
-            open1 = follower.pathBuilder()
-                    .addPath(new BezierCurve(
-                            new Pose(126.000-value, 82.000),
-                            new Pose(120.000-value, 78.000),
-                            new Pose(126.000-value, 74.000)
+                            new Pose(94.000, 60.000),
+                            new Pose(121.5, 57)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+
+                    .addParametricCallback(0.15, () -> {
+                        shooter.stop();
+                        servos.setStopper(STOPPER_CLOSED);
+                        intake.intakeIn();
+                    })
                     .build();
 
             shoot2 = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(126.000-value, 74.000),
-                            new Pose(84.000, 82.000)
+                            new Pose(121.5, 57.5),
+                            new Pose(88, 77)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-60))
+                    .setLinearHeadingInterpolation(Math.toRadians(-35), Math.toRadians(-35))
+                    .addParametricCallback(0.4, () -> {
+                        shooter.ShortVelocity();
+                        servos.setStopper(STOPPER_OPEN);
+                        intake.stop();
+                    })
                     .build();
 
             intake2 = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            new Pose(84.000, 82.000),
-                            new Pose(84.000, 56.000),
-                            new Pose(126.000+2, 58.000+1)
+                            new Pose(88.000, 77.000),
+                            new Pose(109, 60.000),
+                            new Pose(130.000, 57.000)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(-60), Math.toRadians(0))
+                    .addParametricCallback(0.15, () -> {
+                        shooter.stop();
+                        servos.setStopper(STOPPER_CLOSED);
+                        intake.intakeIn();
+                    })
+                    .setLinearHeadingInterpolation(Math.toRadians(-35), Math.toRadians(-35))
                     .build();
+        }
+    }
+}
+            /*
 
             open2 = follower.pathBuilder()
                     .addPath(new BezierCurve(
@@ -568,7 +545,7 @@ public class RedUp7 extends OpMode {
                             new Pose(92.812, 64.500),
                             new Pose(84.000, 82.000)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-40))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
             pathTOintake2 = follower.pathBuilder()
@@ -645,6 +622,4 @@ public class RedUp7 extends OpMode {
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-40))
                     .build();
-        }
-    }
-}
+             */

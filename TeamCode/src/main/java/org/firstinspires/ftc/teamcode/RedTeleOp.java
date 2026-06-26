@@ -120,24 +120,23 @@ public class RedTeleOp extends LinearOpMode {
             // INTAKE CONTROL..
             // =========================
             if (gamepad1.left_bumper) {
-                intake.intakeOut();
+                intake.intakeIn();
 
 
             }
             else if (gamepad1.left_trigger > 0.1) {
-                intake.intakeIn();
+                intake.intakeOut();
             }
             else {
                 intake.stop();
             }
 
-            if(intake.getVelocity()<200)
+            if(intake.getVelocity()<200&&gamepad1.left_bumper == true)
             {
                 rgb.blue();
             }
-            else { rgb.off();}
 
-            if(shooter.getAverageVelocity()>1500)
+            if(shooter.getAverageVelocity()>1200)
             {
                 rgb.green();
             }
@@ -147,13 +146,14 @@ public class RedTeleOp extends LinearOpMode {
             // =========================
             // STOPPER SERVO CONTROL
             // =========================
-            if (gamepad1.dpad_down) {
+            if (shooter.getAverageVelocity()>1200 && gamepad1.y == true) {
+                servos.setStopper(STOPPER_OPEN);
+            }
+            if (shooter.getAverageVelocity()<1200) {
                 servos.setStopper(STOPPER_CLOSED);
             }
 
-            if (gamepad1.dpad_up) {
-                servos.setStopper(STOPPER_OPEN);
-            }
+
 
             // =========================
             // HOODER SERVO CONTROL
