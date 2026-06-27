@@ -37,7 +37,7 @@ public class BlueTeleOp extends LinearOpMode {
 
 
     private Servo hooder;
-
+    public boolean allballsin = false;
 
     // Tune these
 
@@ -50,8 +50,6 @@ public class BlueTeleOp extends LinearOpMode {
     private int intakeState = 0;
     private double filteredTx = 0;
     private double lastAimError = 0;
-
-
     private static final double CLOSE_KP = 0.015;
     private static final double FAR_KP = 0.030;
     private static final double KD = 0.010;
@@ -133,25 +131,42 @@ public class BlueTeleOp extends LinearOpMode {
                 intake.stop();
             }
 
-            if (shooter.getAverageVelocity()>1200 && gamepad1.y == true) {
-                servos.setStopper(STOPPER_OPEN);
-            }
-            if (shooter.getAverageVelocity()<1200) {
-                servos.setStopper(STOPPER_CLOSED);
+            if(servos.getStopperPosition()==0.6)
+            {
+                // rgb.green();
             }
 
 
+            if(gamepad1.left_bumper == true && Math.abs(intake.getVelocity())<350 && gamepad1.y==false){
+
+                allballsin = true;
+            }
+            if(Math.abs(intake.getVelocity())>350){
+
+                allballsin = false;
+            }
+            if(allballsin == true){
+                rgb.yellow();
+            }
+            if(allballsin==false){
+                rgb.off();
+            }
             // =========================
             // STOPPER SERVO CONTROL
             // =========================
+            if( gamepad1.y == false && gamepad1.left_bumper == true){
+                servos.setStopper(STOPPER_CLOSED);
+            }
+            if (shooter.getAverageVelocity()>800 && gamepad1.y == true) {
+                servos.setStopper(STOPPER_OPEN);
 
-            if (gamepad2.dpad_down) {
+            }
+            if (shooter.getAverageVelocity()<1000 && gamepad1.y == false) {
                 servos.setStopper(STOPPER_CLOSED);
             }
 
-            if (shooter.getAverageVelocity()>1200) {
-                servos.setStopper(STOPPER_OPEN);
-            }
+
+
 
             // =========================
             // HOODER SERVO CONTROL
@@ -162,12 +177,6 @@ public class BlueTeleOp extends LinearOpMode {
 
             if (gamepad2.right_trigger>0.1) {
                 servos.setHudder(0.12);
-            }
-
-            if (gamepad2.a && intakeState == 0) {
-                intake.intakeOut();
-                intakeTimer.reset();
-                intakeState = 1;
             }
 
             /*
@@ -266,7 +275,9 @@ public class BlueTeleOp extends LinearOpMode {
 
                 turret.setPower(applyTurretWrapLimit(turretPower));
 
+
                 telemetry.addData("Tag Visible", true);
+                telemetry.addData("Intake Velocity", intake.getVelocity());
                 telemetry.addData("TX Raw", tx);
                 telemetry.addData("TX Filtered", filteredTx);
                 telemetry.addData("Turret Power", turretPower);
@@ -288,10 +299,10 @@ public class BlueTeleOp extends LinearOpMode {
                 turret.setPower(applyTurretWrapLimit(-0.3));
             }
 
-            double turretAngle = turret.getCurrentPosition() / TICKS_PER_DEGREE;
+            telemetry.addData("Turret Position",
+                    turret.getCurrentPosition());
 
-            telemetry.addData("Turret Angle", "%.2f°", turretAngle);
-            telemetry.addData("Encoder Ticks", turret.getCurrentPosition());
+            telemetry.addData("Intake Velocity", intake.getVelocity());
 
             telemetry.addLine("===== SHOOTER =====");
 
