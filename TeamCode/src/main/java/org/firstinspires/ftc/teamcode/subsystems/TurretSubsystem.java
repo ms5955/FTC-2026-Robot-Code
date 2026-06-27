@@ -219,6 +219,10 @@ public class TurretSubsystem {
         turretOffsetDeg = offsetDeg;
     }
 
+    public void setLimelightOffset(double offsetDeg) {
+        turretOffsetDeg = offsetDeg;
+    }
+
     public void stop() {
         turret.setPower(0);
     }

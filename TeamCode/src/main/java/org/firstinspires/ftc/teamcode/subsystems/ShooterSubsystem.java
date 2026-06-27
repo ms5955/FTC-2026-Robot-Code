@@ -10,7 +10,7 @@ public class ShooterSubsystem {
     private final DcMotorEx shooterR;
     private static final double FAST_VELOCITY = 1390;
     private static final double SLOW_VELOCITY = 1260;
-    private static final double SHORT_VELOCITY = 1280;
+    private static final double SHORT_VELOCITY = 1240;
     private static final double SPINUP_BOOST_POWER = 1.0;
     private static final double SPINUP_BOOST_ERROR = 250; // Boost window increased for fast start
     private static final double READY_TOLERANCE = 40;   // Strict tolerance for perfect consistency

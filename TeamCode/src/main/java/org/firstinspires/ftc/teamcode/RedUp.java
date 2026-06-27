@@ -45,6 +45,8 @@ public class RedUp extends OpMode {
 
     private static final double LIMELIGHT_KP = 0.08;
 
+    private double baseTurretAngle = 80;
+
 
     //-------------------------------
     // Paths
@@ -106,7 +108,7 @@ public class RedUp extends OpMode {
         turret = new TurretSubsystem(hardwareMap);
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
-        limelight.pipelineSwitch(0);
+        limelight.pipelineSwitch(1);
         limelight.start();
 
         servos.setHudder(0.40);
@@ -138,19 +140,21 @@ public class RedUp extends OpMode {
                 )
         );
 
-        if (limelightTracking) {
 
-            LLResult result = limelight.getLatestResult();
+        LLResult result = limelight.getLatestResult();
 
-            if (result != null && result.isValid()) {
+        if (result != null && result.isValid()) {
 
-                double correction = result.getTx() * LIMELIGHT_KP;
+            double correction = result.getTx() * LIMELIGHT_KP;
 
-                turret.setFieldAngle(
-                        turret.getLockedFieldAngle() - correction
-                );
-            }
+            turret.setLimelightOffset(-correction);
+
+        } else {
+
+            turret.setLimelightOffset(0);
+
         }
+
 
 
         autonomousPathUpdate();
@@ -225,10 +229,6 @@ public class RedUp extends OpMode {
 
                 shooter.ShortVelocity();
                 if (!follower.isBusy()) {
-
-                    // Turret is already pointing approximately at the goal.
-                    limelightTracking = true;
-
                     actionTimer.reset();
                     pathState = 5;
                 }
@@ -711,7 +711,10 @@ public class RedUp extends OpMode {
                             Math.toRadians(90))
 
                     .addParametricCallback(0.01, () -> {
-                        turret.setFieldAngle(80);
+
+                           // baseTurretAngle = 80;
+                           // turret.setFieldAngle(baseTurretAngle);
+
                         servos.setHudder(0.22);
                         servos.setStopper(STOPPER_OPEN);
 
@@ -788,7 +791,7 @@ public class RedUp extends OpMode {
                     )
                     .addParametricCallback(0.1, () -> {
                         follower.setMaxPower(0.85);
-                        turret.setFieldAngle(40);
+                       // turret.setFieldAngle(40);
                     })
 
                     .addParametricCallback(0.90, () -> {
@@ -863,7 +866,7 @@ public class RedUp extends OpMode {
                     )
                     .addParametricCallback(0.1, () -> {
                         follower.setMaxPower(0.85);
-                        turret.setFieldAngle(55);
+                       // turret.setFieldAngle(55);
                     })
 
                     .addParametricCallback(0.90, () -> {
@@ -936,7 +939,7 @@ public class RedUp extends OpMode {
 
                     )
                     .addParametricCallback(0.1, () -> {
-                        turret.setFieldAngle(55);
+                       // turret.setFieldAngle(55);
                         follower.setMaxPower(0.85);
                     })
 
@@ -1009,7 +1012,7 @@ public class RedUp extends OpMode {
 
                     )
                     .addParametricCallback(0.1, () -> {
-                        turret.setFieldAngle(55);
+                       // turret.setFieldAngle(55);
                         follower.setMaxPower(0.85);
                     })
 

@@ -37,7 +37,7 @@ public class RedTeleOp extends LinearOpMode {
 
 
     private Servo hooder;
-
+    public boolean allballsin = false;
 
     // Tune these
 
@@ -131,27 +131,40 @@ public class RedTeleOp extends LinearOpMode {
                 intake.stop();
             }
 
-            if(intake.getVelocity()<200&&gamepad1.left_bumper == true)
+            if(servos.getStopperPosition()==0.6)
             {
-                rgb.blue();
+               // rgb.green();
             }
 
-            if(shooter.getAverageVelocity()>1200)
-            {
-                rgb.green();
+
+            if(gamepad1.left_bumper == true && Math.abs(intake.getVelocity())<350 && gamepad1.y==false){
+
+                allballsin = true;
             }
-            else { rgb.off();}
+            if(Math.abs(intake.getVelocity())>350){
 
-
+                allballsin = false;
+            }
+           if(allballsin == true){
+               rgb.yellow();
+           }
+           if(allballsin==false){
+               rgb.off();
+           }
             // =========================
             // STOPPER SERVO CONTROL
             // =========================
-            if (shooter.getAverageVelocity()>1200 && gamepad1.y == true) {
-                servos.setStopper(STOPPER_OPEN);
-            }
-            if (shooter.getAverageVelocity()<1200) {
+            if( gamepad1.y == false && gamepad1.left_bumper == true){
                 servos.setStopper(STOPPER_CLOSED);
             }
+            if (shooter.getAverageVelocity()>800 && gamepad1.y == true) {
+                servos.setStopper(STOPPER_OPEN);
+
+            }
+            if (shooter.getAverageVelocity()<1000 && gamepad1.y == false) {
+                servos.setStopper(STOPPER_CLOSED);
+            }
+
 
 
 
@@ -164,12 +177,6 @@ public class RedTeleOp extends LinearOpMode {
 
             if (gamepad2.right_trigger>0.1) {
                 servos.setHudder(0.12);
-            }
-
-            if (gamepad2.a && intakeState == 0) {
-                intake.intakeOut();
-                intakeTimer.reset();
-                intakeState = 1;
             }
 
             /*
@@ -268,6 +275,7 @@ public class RedTeleOp extends LinearOpMode {
 
                 turret.setPower(applyTurretWrapLimit(turretPower));
 
+
                 telemetry.addData("Tag Visible", true);
                 telemetry.addData("Intake Velocity", intake.getVelocity());
                 telemetry.addData("TX Raw", tx);
@@ -293,6 +301,8 @@ public class RedTeleOp extends LinearOpMode {
 
             telemetry.addData("Turret Position",
                     turret.getCurrentPosition());
+
+            telemetry.addData("Intake Velocity", intake.getVelocity());
 
             telemetry.addLine("===== SHOOTER =====");
 
