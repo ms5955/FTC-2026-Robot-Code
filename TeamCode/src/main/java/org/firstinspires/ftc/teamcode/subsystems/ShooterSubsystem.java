@@ -8,7 +8,7 @@ public class ShooterSubsystem {
 
     private final DcMotorEx shooterL;
     private final DcMotorEx shooterR;
-    private static final double FAST_VELOCITY = 1390;
+    private static final double FAST_VELOCITY = 1500;
     private static final double SLOW_VELOCITY = 1260;
     private static final double SHORT_VELOCITY = 1240;
     private static final double SPINUP_BOOST_POWER = 1.0;
