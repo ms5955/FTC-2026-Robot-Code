@@ -161,6 +161,10 @@ public class BlueTeleOp extends LinearOpMode {
                 servos.setStopper(STOPPER_OPEN);
 
             }
+            if (shooter.getAverageVelocity()>1000 && gamepad1.right_bumper == true) {
+                servos.setStopper(STOPPER_OPEN);
+
+            }
             if (shooter.getAverageVelocity()<1000 && gamepad1.y == false) {
                 servos.setStopper(STOPPER_CLOSED);
             }
