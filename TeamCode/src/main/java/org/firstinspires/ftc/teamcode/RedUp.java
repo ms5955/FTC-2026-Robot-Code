@@ -114,15 +114,12 @@ public class RedUp extends OpMode {
         servos.setHudder(0.40);
         servos.setStopper(STOPPER_CLOSE);
 
-       // turret.setFieldAngle(65);
+       turret.setFieldAngle(80);
 
         paths = new Paths(follower);
 
         telemetry.addLine("Initialized");
         telemetry.update();
-    }
-    public void setPredictiveBraking(double strength) {
-        predictiveBrakingStrength = Math.max(0.0, Math.min(1.0, strength));
     }
 
     //-------------------------------
@@ -194,16 +191,6 @@ public class RedUp extends OpMode {
             intake.intakeIn();
         }
     }
-
-    private void intake() {
-
-        shooter.stop();
-
-        servos.setStopper(STOPPER_CLOSE);
-
-        intake.intakeIn();
-    }
-
     private void stopRobot() {
 
         shooter.stop();
@@ -269,6 +256,7 @@ public class RedUp extends OpMode {
                 if (!follower.isBusy()) {
 
                     shooter.ShortVelocity();
+                    turret.setFieldAngle(0);
 
                     follow(paths.shoot2, 4);
                 }

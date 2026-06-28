@@ -31,9 +31,9 @@ public class TurretSubsystem {
     private static final double MAX_POWER_CHANGE = 0.02;
 
     // PIDF
-    private double kP = 0.0065;
+    private double kP = 0.0055;
     private double kI = 0.0000;
-    private double kD = 0.00025;
+    private double kD = 0.00012;
     private double kF = 0.03;
 
     private double integral = 0;
@@ -118,16 +118,16 @@ public class TurretSubsystem {
                 (kP * error)
                         + (kI * integral)
                         + (kD * derivative)
-                        - (0.00003 * turretVelocity);
+                        - (0.000015  * turretVelocity);
 
         if (Math.abs(error) > 200) {
-            power += Math.signum(error) * 0.10;
+            power += Math.signum(error) * 0.07;
         }
         else if (Math.abs(error) > 80) {
-            power += Math.signum(error) * 0.06;
+            power += Math.signum(error) * 0.04;
         }
         else if (Math.abs(error) > 20) {
-            power += Math.signum(error) * 0.03;
+            power += Math.signum(error) * 0.015;
         }
 
         power = Math.max(

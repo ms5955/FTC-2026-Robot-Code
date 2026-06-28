@@ -65,9 +65,9 @@ public class BlueUp extends OpMode {
     private static final double STOPPER_OPEN = 0.60;
     private static final double STOPPER_CLOSE = 0.30;
 
-    private static final int INTAKE_WAIT = 1000;
-    private static final int SHOOTER_WAIT = 300;
-    private static final int FEED_TIME = 700;
+    private static final int INTAKE_WAIT = 1100;
+    private static final int SHOOTER_WAIT = 200;
+    private static final int FEED_TIME = 900;
 
     //========================================
     // INIT
@@ -633,7 +633,7 @@ public class BlueUp extends OpMode {
                     )
 
                     .addParametricCallback(0.01, () -> {
-                        turret.setFieldAngle(110);
+                        turret.setFieldAngle(180-65);
                         servos.setHudder(0.22);
                         servos.setStopper(STOPPER_OPEN);
 
@@ -700,7 +700,7 @@ public class BlueUp extends OpMode {
                     )
 
                     .addParametricCallback(0.1, () -> {
-                        turret.setFieldAngle(55);
+                        turret.setFieldAngle(180-55);
                     })
 
                     .addParametricCallback(0.90, () -> {
@@ -767,7 +767,7 @@ public class BlueUp extends OpMode {
                     )
 
                     .addParametricCallback(0.1, () -> {
-                        turret.setFieldAngle(55);
+                        turret.setFieldAngle(180-55);
                     })
 
                     .addParametricCallback(0.90, () -> {
@@ -831,7 +831,7 @@ public class BlueUp extends OpMode {
                     )
 
                     .addParametricCallback(0.1, () -> {
-                        turret.setFieldAngle(55);
+                        turret.setFieldAngle(180-55);
                     })
 
                     .addParametricCallback(0.90, () -> {
@@ -898,7 +898,7 @@ public class BlueUp extends OpMode {
                     )
 
                     .addParametricCallback(0.1, () -> {
-                        turret.setFieldAngle(55);
+                        turret.setFieldAngle(180-55);
                     })
 
                     .addParametricCallback(0.90, () -> {
@@ -924,7 +924,10 @@ public class BlueUp extends OpMode {
                             )
                     )
 
-                    .setTangentHeadingInterpolation()
+                    .setLinearHeadingInterpolation(
+                            Math.toRadians(180),
+                            Math.toRadians(180)
+                    )
                     .addParametricCallback(0.05, () -> {
 
                         intake.intakeIn();
@@ -944,7 +947,13 @@ public class BlueUp extends OpMode {
                             )
                     )
 
-                    .setTangentHeadingInterpolation()
+                    .setLinearHeadingInterpolation(
+                            Math.toRadians(180),
+                            Math.toRadians(180)
+                    )
+                    .addParametricCallback(0.1, () -> {
+                        turret.setFieldAngle(180-55);
+                    })
                     .build();
 
         }
