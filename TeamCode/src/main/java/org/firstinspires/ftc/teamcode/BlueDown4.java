@@ -20,9 +20,9 @@ import org.firstinspires.ftc.teamcode.subsystems.ServoSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.TurretSubsystem;
 
-@Autonomous(name = "RedDown4", group = "Autonomous")
+@Autonomous(name = "BlueDown4", group = "Autonomous")
 @Configurable
-public class RedDown4 extends OpMode {
+public class BlueDown4 extends OpMode {
 
     private TelemetryManager panelsTelemetry;
     public Follower follower;
@@ -51,7 +51,7 @@ public class RedDown4 extends OpMode {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(101, 8, Math.toRadians(0)));
+        follower.setStartingPose(new Pose(40.5, 8, Math.toRadians(180)));
         follower.setMaxPower(0.8);
 
         shooter = new ShooterSubsystem(hardwareMap);
@@ -157,191 +157,201 @@ public class RedDown4 extends OpMode {
         switch (pathState) {
 
             case 0:
-                startShootPath(paths.shoot1, 1);
+                follower.followPath(paths.shoot1, true);
+                pathState = 1;
                 break;
 
             case 1:
                 if (!follower.isBusy()) {
-                    shootingStarted = false;
+                    follower.followPath(paths.intake1, true);
                     pathState = 2;
                 }
                 break;
 
             case 2:
-                runShootSequence(3);
+                if (!follower.isBusy()) {
+                    follower.followPath(paths.shoot2, true);
+                    pathState = 3;
+                }
                 break;
 
             case 3:
-                startIntakePath(paths.intake1, 4);
+                if (!follower.isBusy()) {
+                    follower.followPath(paths.pathToIntake2, true);
+                    pathState = 4;
+                }
                 break;
 
             case 4:
                 if (!follower.isBusy()) {
-                    intake.stop();
-                    startShootPath(paths.shoot2, 5);
+                    follower.followPath(paths.intake2, true);
+                    pathState = 5;
                 }
                 break;
 
             case 5:
                 if (!follower.isBusy()) {
-                    shootingStarted = false;
+                    follower.followPath(paths.shoot3, true);
                     pathState = 6;
                 }
                 break;
 
             case 6:
-                runShootSequence(7);
+                if (!follower.isBusy()) {
+                    follower.followPath(paths.pathToIntake3, true);
+                    pathState = 7;
+                }
                 break;
 
             case 7:
-                startNormalPath(paths.pathTointake, 8);
+                if (!follower.isBusy()) {
+                    follower.followPath(paths.intake3, true);
+                    pathState = 8;
+                }
                 break;
 
             case 8:
                 if (!follower.isBusy()) {
-                    startIntakePath(paths.intake2, 9);
+                    follower.followPath(paths.shoot4, true);
+                    pathState = 9;
                 }
                 break;
 
             case 9:
                 if (!follower.isBusy()) {
-                    intake.stop();
-                    startShootPath(paths.shoot3, 10);
+                    follower.followPath(paths.pathToIntake4, true);
+                    pathState = 10;
                 }
                 break;
 
             case 10:
                 if (!follower.isBusy()) {
-                    shootingStarted = false;
+                    follower.followPath(paths.intake4, true);
                     pathState = 11;
                 }
                 break;
 
             case 11:
-                runShootSequence(12);
-                break;
-
-            case 12:
-                startNormalPath(paths.pathTointake2, 13);
-                break;
-
-            case 13:
                 if (!follower.isBusy()) {
-                    startIntakePath(paths.intake3, 14);
+                    follower.followPath(paths.shoot5, true);
+                    pathState = 12;
                 }
-                break;
-
-            case 14:
-                if (!follower.isBusy()) {
-                    intake.stop();
-                    startShootPath(paths.shoot4, 15);
-                }
-                break;
-
-            case 15:
-                if (!follower.isBusy()) {
-                    shootingStarted = false;
-                    pathState = 16;
-                }
-                break;
-
-            case 16:
-                runShootSequence(17);
-                break;
-
-            case 17:
-                intake.stop();
-                shooter.stop();
-                turret.stop();
-                servos.setStopper(STOPPER_CLOSED);
                 break;
         }
     }
 
     public static class Paths {
+
         public PathChain shoot1;
         public PathChain intake1;
         public PathChain shoot2;
-        public PathChain pathTointake;
+        public PathChain pathToIntake2;
         public PathChain intake2;
         public PathChain shoot3;
-        public PathChain pathTointake2;
+        public PathChain pathToIntake3;
         public PathChain intake3;
         public PathChain shoot4;
+        public PathChain pathToIntake4;
+        public PathChain intake4;
+        public PathChain shoot5;
 
         public Paths(Follower follower) {
 
             shoot1 = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(101.000, 8.000),
-                            new Pose(95.000, 8.000)
+                            new Pose(40.500, 8.000),
+                            new Pose(46.500, 8.000)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
             intake1 = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            new Pose(95.000, 8.000),
-                            new Pose(93.000, 36.000),
-                            new Pose(126.000, 35.000)
+                            new Pose(46.500, 8.000),
+                            new Pose(48.500, 36.000),
+                            new Pose(15.500, 35.000)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
             shoot2 = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(126.000, 35.000),
-                            new Pose(95.000, 8.000)
+                            new Pose(15.500, 35.000),
+                            new Pose(46.500, 8.000)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
-            pathTointake = follower.pathBuilder()
+            pathToIntake2 = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(95.000, 8.000),
-                            new Pose(129.000, 15.000)
+                            new Pose(46.500, 8.000),
+                            new Pose(13.500, 15.000)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-30))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
             intake2 = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(129.000, 15.000),
-                            new Pose(129.000, 7.000)
+                            new Pose(13.500, 15.000),
+                            new Pose(12.500, 7.000)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(-30), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(225), Math.toRadians(180))
                     .build();
 
             shoot3 = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(129.000, 7.000),
-                            new Pose(95.000, 8.000)
+                            new Pose(12.500, 7.000),
+                            new Pose(46.500, 8.000)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
-            pathTointake2 = follower.pathBuilder()
+            pathToIntake3 = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(95.000, 8.000),
-                            new Pose(129.000, 34.000)
+                            new Pose(46.500, 8.000),
+                            new Pose(12.500, 34.000)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-30))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
             intake3 = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(126.000, 34.000),
-                            new Pose(126.000, 13.000)
+                            new Pose(12.500, 34.000),
+                            new Pose(9.500, 6.000)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(-30), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(225), Math.toRadians(180))
                     .build();
 
             shoot4 = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(129.000, 13.000),
-                            new Pose(94.000, 8.000)
+                            new Pose(9.500, 6.000),
+                            new Pose(46.500, 8.000)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    .build();
+
+            pathToIntake4 = follower.pathBuilder()
+                    .addPath(new BezierLine(
+                            new Pose(46.500, 8.000),
+                            new Pose(15.500, 35.000)
+                    ))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    .build();
+
+            intake4 = follower.pathBuilder()
+                    .addPath(new BezierLine(
+                            new Pose(15.500, 35.000),
+                            new Pose(12.500, 6.000)
+                    ))
+                    .setLinearHeadingInterpolation(Math.toRadians(225), Math.toRadians(180))
+                    .build();
+
+            shoot5 = follower.pathBuilder()
+                    .addPath(new BezierLine(
+                            new Pose(12.500, 6.000),
+                            new Pose(46.500, 8.000)
+                    ))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
         }
     }
