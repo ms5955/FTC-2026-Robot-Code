@@ -42,7 +42,7 @@ public class BlueDown4 extends OpMode {
     private static final double SHOOT_TIME = 1200;
     private static final double SHOOT_VELOCITY_READY = 1430;
 
-    private static final double TURRET_ANGLE = 71;
+    private static final double TURRET_ANGLE = 180-71;
 
     private boolean shootingStarted = false;
 
