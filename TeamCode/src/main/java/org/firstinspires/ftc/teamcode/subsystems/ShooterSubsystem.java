@@ -11,6 +11,8 @@ public class ShooterSubsystem {
     private static final double FAST_VELOCITY = 1500.0;
     private static final double SLOW_VELOCITY = 1260;
     private static final double SHORT_VELOCITY = 1240;
+    private static final double LONG_SHOOT= 1440; // Target updated to 1600
+
     private static final double SPINUP_BOOST_POWER = 1.0;
     private static final double SPINUP_BOOST_ERROR = 250; // Boost window increased for fast start
     private static final double READY_TOLERANCE = 40;   // Strict tolerance for perfect consistency
@@ -50,6 +52,9 @@ public class ShooterSubsystem {
 
     public void ShortVelocity(){
         shootVelocity(SHORT_VELOCITY);
+    }
+    public void longshoot(){
+        shootVelocity(LONG_SHOOT);
     }
 
     public void shootVelocity(double velocity) {
